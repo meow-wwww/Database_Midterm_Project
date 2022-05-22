@@ -60,7 +60,7 @@ def register(request):
 
 
 def login(request):
-    print('===========in func login', request)
+    # print('===========in func login', request)
     if request.method == 'POST':
         userform = UserFormLogin(request.POST)
         if userform.is_valid():
@@ -94,7 +94,7 @@ def login(request):
 
 @identity_check
 def index(request):
-    print('===========in index')
+    # print('===========in index')
     username = username_global
 
     script = request.session.get('self_script')
@@ -111,7 +111,7 @@ def index(request):
     my_follow_list_len = len(my_follow_list)
 
     # 展示关注人的帖子
-    
+    follow_post_list = Post.objects.raw('select * from blog_post, blog_follow where blog_post.author_id = blog_follow.be_followed_id and blog_follow.following_id = %s', [username])
 
     searchform = SearchForm(request.POST)
     if request.method == 'POST':
@@ -126,7 +126,7 @@ def index(request):
 
 @identity_check
 def userinfo(request):
-    print('===========in userinfo')
+    # print('===========in userinfo')
     hisname = request.GET.get('info')
     username = username_global
     script = request.session.get('self_script')
@@ -152,7 +152,7 @@ def userinfo(request):
 
 @identity_check
 def post(request):
-    print('===========in post')
+    # print('===========in post')
     username = username_global
     post_form = PostForm(request.POST)
 
@@ -176,7 +176,7 @@ def post(request):
 
 @identity_check
 def follow(request):
-    print('===========in follow')
+    # print('===========in follow')
     username = username_global
     hisname = request.GET.get('goal')
     # 不用检查是否已关注，直接insert即可（在前面做检查了）
@@ -195,7 +195,7 @@ def follow(request):
 
 @identity_check
 def unfollow(request):
-    print('===========in unfollow')
+    # print('===========in unfollow')
     username = username_global
     hisname = request.GET.get('goal')
     # 不用检查是否已关注，直接delete即可（在前面做检查了）
@@ -210,3 +210,31 @@ def unfollow(request):
     request.session['self_script'] = 'alert'
     request.session['self_message'] = '取消关注成功'
     return redirect(f'/blog/userinfo/?info={hisname}')
+
+
+@identity_check
+def like(request):
+    post_id = request.GET.get('id')
+    hisname = Post.objects.raw('select * from blog_post where blog_post.id = %s', [post_id])[0].author_id
+    source = request.GET.get('from')
+    username = username_global
+    cursor = connection.cursor()
+    try:
+        cursor.execute(f'insert into blog_like value(DEFAULT, \'{post_id}\', \'{username}\')')
+    except:
+        request.session['self_script'] = 'alert'
+        request.session['self_message'] = '点赞失败，出现了奇怪的错误'
+        return redirect(f'/blog/index/')
+    
+    if source == 'index':
+        return redirect('/blog/index/')
+    elif source == 'info':
+        return redirect(f'/blog/userinfo/?info={hisname}')
+
+
+@identity_check
+def logout(request):
+    # print('===========in logout')
+    global username_global
+    username_global = None
+    return redirect(f'/blog/login/')

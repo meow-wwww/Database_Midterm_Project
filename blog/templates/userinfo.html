@@ -43,6 +43,9 @@
       <div>
         {{post.content}}
       </div>
+      <button style="float:right">
+        <a href="/blog/like/?id={{post.id}}&from=info">赞</a>
+    </button>
     </div>
     {% endfor %}
     {% endif %}
