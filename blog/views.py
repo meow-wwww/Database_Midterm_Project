@@ -228,15 +228,24 @@ def like(request):
     post_id = request.GET.get('id')
     hisname = Post.objects.raw('select * from blog_post where blog_post.id = %s', [post_id])[0].author_id
     source = request.GET.get('from')
+    state = request.GET.get('state')
     username = username_global
     cursor = connection.cursor()
-    try:
-        cursor.execute(f'insert into blog_like value(DEFAULT, \'{post_id}\', \'{username}\')')
-    except:
-        request.session['self_script'] = 'alert'
-        request.session['self_message'] = '点赞失败，出现了奇怪的错误'
-    finally:
-        cursor.close()
+    print(f'state = {state}, {type(state)}')
+    if state == '0':
+        try:
+            cursor.execute(f'insert into blog_like value(DEFAULT, \'{post_id}\', \'{username}\')')
+        except:
+            request.session['self_script'] = 'alert'
+            request.session['self_message'] = '点赞失败，出现了奇怪的错误'
+    else:
+        try:
+            # print(f'delete from blog_like where blog_like.post_id = %s and blog_like.username_id = %s', [post_id, username])
+            cursor.execute('delete from blog_like where blog_like.post_id_id = %s and blog_like.username_id = %s', [post_id, username])
+        except:
+            request.session['self_script'] = 'alert'
+            request.session['self_message'] = '取消点赞失败，出现了奇怪的错误'
+    cursor.close()
     
     if source == 'index':
         return redirect('/blog/index/')

@@ -7,6 +7,7 @@
 - conda环境配置见env.yaml
 - 数据库：mysql 8.0.21
 - 在数据库中创建一个用户（或者用root用户也行）
+
   - 将用户名、密码写在mysite/settings.py中（如下）
   - ```python
     DATABASES = {
@@ -20,6 +21,9 @@
         }
     }
     ```
+- settings.sql用于在数据库中设置数据库特性（视图、trigger等），需要自己手动运行一次
+
+
 
 ## 运行方法
 
@@ -34,7 +38,6 @@
 
   每次修改models.py后（相当于你对数据库的定义变了），都要重新运行一遍这两个命令。
 - 然后运行 `python manage.py runserver`，浏览器访问 `127.0.0.1:8080/<你定义的url>即可。`
-
 
 ## 注意
 
