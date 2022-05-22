@@ -111,7 +111,10 @@ def index(request):
     my_follow_list_len = len(my_follow_list)
 
     # 展示关注人的帖子
-    follow_post_list = Post.objects.raw('select * from blog_post, blog_follow where blog_post.author_id = blog_follow.be_followed_id and blog_follow.following_id = %s', [username])
+    cursor = connection.cursor()
+    cursor.execute('select follow_post.id, follow_post.author, follow_post.content, follow_post.time, count(*) likenum from (select blog_post.id, blog_post.content, blog_post.author_id, blog_post.time from blog_post, blog_follow where blog_post.author_id = blog_follow.be_followed_id and blog_follow.following_id = %s) as follow_post(id, content, author, time), blog_like where follow_post.id = blog_like.post_id_id group by follow_post.id', [username])
+    follow_post_list = list(cursor.fetchall())
+    cursor.close()
 
     searchform = SearchForm(request.POST)
     if request.method == 'POST':
@@ -138,8 +141,11 @@ def userinfo(request):
     follow_list = Follow.objects.raw('select * from blog_follow where following_id = %s and be_followed_id = %s', [username, hisname])
 
     # 查看他的发帖
-    post_list = Post.objects.raw('select * from blog_post where author_id = %s', [hisname])
-
+    cursor = connection.cursor()
+    cursor.execute('select follow_post.id, follow_post.author, follow_post.content, follow_post.time, count(*) likenum from (select blog_post.id, blog_post.content, blog_post.author_id, blog_post.time from blog_post, blog_follow where blog_post.author_id = blog_follow.be_followed_id and blog_follow.following_id = %s) as follow_post(id, content, author, time), blog_like where follow_post.id = blog_like.post_id_id group by follow_post.id', [hisname])
+    post_list = list(cursor.fetchall())
+    cursor.close()
+   
     # if request.method == 'POST':
     #     if searchform.is_valid():
     #         # print('===========is searching friends')

@@ -51,13 +51,14 @@
     {% for post in follow_post_list %}
     <div class="div-all">
         <div>
-          {{post.author_id}}于{{post.time}}发表：
+          {{post.1}}于{{post.3}}发表：
         </div>
         <div>
-          {{post.content}}
+          {{post.2}}
         </div>
         <button style="float:right">
             <a href="/blog/like/?id={{post.id}}&from=index">赞</a>
+            <a>（{{post.4}}已赞）</a>
         </button>
       </div>
     {% endfor %}
