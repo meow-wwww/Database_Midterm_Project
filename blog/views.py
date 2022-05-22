@@ -112,9 +112,10 @@ def index(request):
 
     # 展示关注人的帖子
     cursor = connection.cursor()
-    cursor.execute('select blog_post.id, blog_post.author_id, blog_post.content, blog_post.time, likenum from post_id_likenum, blog_post, blog_follow where blog_follow.following_id = %s and blog_follow.be_followed_id = blog_post.author_id and post_id_likenum.id = blog_post.id;', [username])
-    follow_post_list = list(cursor.fetchall())[::-1]
-    print(follow_post_list)
+    cursor.execute('select id, author, content, time, likenum, like_or_not from my_follow_post_bool where my_follow_post_bool.myid = %s', [username])
+    follow_post_list = list(cursor.fetchall())
+    follow_post_list.sort(key=lambda x:x[0])
+    follow_post_list = follow_post_list[::-1]
     cursor.close()
 
     searchform = SearchForm(request.POST)
@@ -143,8 +144,11 @@ def userinfo(request):
 
     # 查看他的发帖
     cursor = connection.cursor()
-    cursor.execute('select blog_post.id, blog_post.author_id, blog_post.content, blog_post.time, likenum from post_id_likenum, blog_post where blog_post.author_id = %s and post_id_likenum.id = blog_post.id', [hisname])
-    post_list = list(cursor.fetchall())[::-1]
+    cursor.execute('select id, author, content, time, likenum, like_or_not from ones_post_bool where ones_post_bool.myid = %s and ones_post_bool.hisid = %s', [username, hisname])
+    post_list = list(cursor.fetchall())
+    post_list.sort(key=lambda x:x[0])
+    post_list = post_list[::-1]
+    print(post_list)
     cursor.close()
    
     # if request.method == 'POST':

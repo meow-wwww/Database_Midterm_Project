@@ -57,7 +57,13 @@
           {{post.2}}
         </div>
         <button style="float:right">
-            <a href="/blog/like/?id={{post.0}}&from=index">赞</a>
+            <a href="/blog/like/?id={{post.0}}&from=index">
+            {% if post.5 %}
+            已赞
+            {% else %}
+            赞
+            {% endif %}
+            </a>
             <a>（{{post.4}}已赞）</a>
         </button>
       </div>

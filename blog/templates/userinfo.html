@@ -20,7 +20,14 @@
     margin: 0px auto;
   }
 </style>
-<style>.div-all{width:300px;margin:0 auto;height:100px;border:1px solid rgb(0, 0, 0)}</style>
+<style>
+  .div-all {
+    width: 300px;
+    margin: 0 auto;
+    height: 100px;
+    border: 1px solid rgb(0, 0, 0)
+  }
+</style>
 
 <body>
   <script type="text/javascript">{ { script } } ('{{message}}')</script>
@@ -44,7 +51,13 @@
         {{post.2}}
       </div>
       <button style="float:right">
-        <a href="/blog/like/?id={{post.0}}&from=info">赞</a>
+        <a href="/blog/like/?id={{post.0}}&from=info">
+          {% if post.5 %}
+          已赞
+          {% else %}
+          赞
+          {% endif %}
+        </a>
         <a>（{{post.4}}已赞）</a>
       </button>
     </div>
