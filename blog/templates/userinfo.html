@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="zh-CN">
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Userinfo</title>
+</head>
+<style>
+  html,
+  body {
+    text-align: center;
+    margin: 0px auto;
+  }
+</style>
+
+<body>
+  <script type="text/javascript">{{script}}('{{message}}!!!')</script>
+  <h1>查看用户：{{username}}</h1>
+  <div>关注</div>
+  <h2>TA的帖子</h2>
+</body>
+
+</html>

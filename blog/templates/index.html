@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="zh-CN">
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Index</title>
+</head>
+<style>
+    html,
+    body {
+        text-align: center;
+        margin: 0px auto;
+    }
+</style>
+
+<body>
+    <script type="text/javascript">{ { script } } ('{{message}}!!!')</script>
+    <h1>你好，{{username}}</h1>
+    <h2>查找用户</h2>
+    <form method='post' enctype="multipart/form-data" action="">
+        {{searchform.as_p}}
+        <input type="submit" value="查找" />
+    </form>
+    {% if users_list %}
+    <div>查找结果</div>
+    {% for user in users_list %}
+    <div>
+        <a href="/blog/userinfo/">{{user.name}}</a>
+    </div>
+    {% endfor %}
+    {% endif %}
+    <h2>看帖</h2>
+</body>
+
+</html>
