@@ -11,7 +11,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Index</title>
+    <title>Post</title>
 </head>
 <style>
     html,
@@ -23,26 +23,11 @@
 
 <body>
     <script type="text/javascript">{{ script }} ('{{message}}')</script>
-    <h1>你好，{{username}}</h1>
-    <div>
-        <a href="/blog/post/">发帖</a>
-        <a>我关注的人</a>
-        <a>关注我的人</a>
-    </div>
-    <h2>查找用户</h2>
+    <h1>发帖</h1>
     <form method='post' enctype="multipart/form-data" action="">
-        {{searchform.as_p}}
-        <input type="submit" value="查找" />
+        {{post_form.as_p}}
+        <input type="submit" value="发送" />
     </form>
-    {% if users_list %}
-    <div>查找结果</div>
-    {% for user in users_list %}
-    <div>
-        <a href="/blog/userinfo/">{{user.name}}</a>
-    </div>
-    {% endfor %}
-    {% endif %}
-    <h2>看帖</h2>
 </body>
 
 </html>

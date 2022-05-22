@@ -20,6 +20,9 @@ class UserFormLogin(forms.Form):
 class SearchForm(forms.Form):
     search_name = forms.CharField(label='想查找的用户名',max_length=20)
 
+class PostForm(forms.Form):
+    content = forms.CharField(label='发帖', max_length=180)
+
 
 # Create your views here.
 def identity_check(func):
@@ -121,3 +124,26 @@ def userinfo(request):
     #         return render(request, 'index.html', locals())
     # else:
     return render(request, 'userinfo.html', locals())
+
+@identity_check
+def post(request):
+    print('===========in post')
+    username = username_global
+    post_form = PostForm(request.POST)
+
+    if request.method == 'POST':
+        if post_form.is_valid():
+            content = post_form.cleaned_data['content']
+            # 修改数据库
+            cursor = connection.cursor()
+            try:
+                cursor.execute(f'insert into blog_post value(DEFAULT, \'{content}\', \'{datetime.now()}\', \'{username}\')')
+            except:
+                script = 'alert'
+                message = '发送失败'
+                return render(request, 'post.html', locals())
+            request.session['self_script'] = 'alert'
+            request.session['self_message'] = '发送成功'
+            return redirect('/blog/index/')
+    else:
+        return render(request, 'post.html', locals())

@@ -1,4 +1,5 @@
 # from tkinter import models.CASCADE
+from curses.ascii import US
 from django.db import models
 from datetime import datetime
 
@@ -10,6 +11,7 @@ class User(models.Model):
 
 class Post(models.Model):
     id = models.AutoField(primary_key=True)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.CharField(max_length=200)
     time = models.DateTimeField(auto_now_add=True)
 
