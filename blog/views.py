@@ -66,7 +66,13 @@ def login(request):
         if userform.is_valid():
             username = userform.cleaned_data['username']
             password = userform.cleaned_data['password']
-            user = User.objects.raw('select * from blog_user where blog_user.name = %s', [username])[0]
+            user = None
+            try:
+                user = User.objects.raw('select * from blog_user where blog_user.name = %s', [username])[0]
+            except:
+                script = 'alert'
+                message = '用户名不存在'
+                return render(request, 'login.html', locals())
             if user.password == password:
                 global username_global
                 username_global = username
@@ -76,7 +82,7 @@ def login(request):
             else:
                 script = 'alert'
                 message = '用户名或密码错误'
-                render(request, 'login.html', locals())
+                return render(request, 'login.html', locals())
     else:
         script = request.session.get('self_script')
         message = request.session.get('self_message')
@@ -90,14 +96,26 @@ def login(request):
 def index(request):
     print('===========in index')
     username = username_global
+
     script = request.session.get('self_script')
     message = request.session.get('self_message')
     request.session['self_script'] = None
     request.session['self_message'] = None
+
+    # 我关注的人数
+    follow_me_list = Follow.objects.raw('select * from blog_follow where following_id = %s', [username])
+    follow_me_list_len = len(follow_me_list)
+
+    # 关注我的人数
+    my_follow_list = Follow.objects.raw('select * from blog_follow where be_followed_id = %s', [username])
+    my_follow_list_len = len(my_follow_list)
+
+    # 展示关注人的帖子
+    
+
     searchform = SearchForm(request.POST)
     if request.method == 'POST':
         if searchform.is_valid():
-            # print('===========is searching friends')
             search_name = searchform.cleaned_data['search_name']
             search_name = "%"+search_name+"%"
             users_list = User.objects.raw('select * from blog_user where blog_user.name like %s', [search_name])
@@ -109,11 +127,18 @@ def index(request):
 @identity_check
 def userinfo(request):
     print('===========in userinfo')
+    hisname = request.GET.get('info')
     username = username_global
     script = request.session.get('self_script')
     message = request.session.get('self_message')
     request.session['self_script'] = None
     request.session['self_message'] = None
+
+    # 我有没有关注他
+    follow_list = Follow.objects.raw('select * from blog_follow where following_id = %s and be_followed_id = %s', [username, hisname])
+
+    # 查看他的发帖
+    post_list = Post.objects.raw('select * from blog_post where author_id = %s', [hisname])
 
     # if request.method == 'POST':
     #     if searchform.is_valid():
@@ -147,3 +172,41 @@ def post(request):
             return redirect('/blog/index/')
     else:
         return render(request, 'post.html', locals())
+
+
+@identity_check
+def follow(request):
+    print('===========in follow')
+    username = username_global
+    hisname = request.GET.get('goal')
+    # 不用检查是否已关注，直接insert即可（在前面做检查了）
+    # 但是最好再加一个except
+    cursor = connection.cursor()
+    try:
+        cursor.execute(f'insert into blog_follow value(DEFAULT, \'{hisname}\', \'{username}\')')
+    except:
+        request.session['self_script'] = 'alert'
+        request.session['self_message'] = '关注失败，出现了奇怪的错误'
+        return redirect(f'/blog/userinfo/?info={hisname}')
+    request.session['self_script'] = 'alert'
+    request.session['self_message'] = '关注成功'
+    return redirect(f'/blog/userinfo/?info={hisname}')
+
+
+@identity_check
+def unfollow(request):
+    print('===========in unfollow')
+    username = username_global
+    hisname = request.GET.get('goal')
+    # 不用检查是否已关注，直接delete即可（在前面做检查了）
+    # 但是最好再加一个except
+    cursor = connection.cursor()
+    try:
+        cursor.execute('delete from blog_follow where following_id = %s and be_followed_id = %s', [username, hisname])
+    except:
+        request.session['self_script'] = 'alert'
+        request.session['self_message'] = '取关失败，出现了奇怪的错误'
+        return redirect(f'/blog/userinfo/?info={hisname}')
+    request.session['self_script'] = 'alert'
+    request.session['self_message'] = '取消关注成功'
+    return redirect(f'/blog/userinfo/?info={hisname}')

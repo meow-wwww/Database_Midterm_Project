@@ -20,12 +20,33 @@
     margin: 0px auto;
   }
 </style>
+<style>.div-all{width:300px;margin:0 auto;height:100px;border:1px solid rgb(0, 0, 0)}</style>
 
 <body>
-  <script type="text/javascript">{{script}}('{{message}}!!!')</script>
-  <h1>查看用户：{{username}}</h1>
-  <div>关注</div>
+  <script type="text/javascript">{ { script } } ('{{message}}')</script>
+  <h1>查看用户：{{hisname}}</h1>
+  <div>
+    {% if follow_list %}
+    <a href="/blog/unfollow/?goal={{hisname}}">取消关注</a>
+    {% else %}
+    <a href="/blog/follow/?goal={{hisname}}">关注</a>
+    {% endif %}
+  </div>
   <h2>TA的帖子</h2>
+  <div>
+    {% if post_list %}
+    {% for post in post_list %}
+    <div class="div-all">
+      <div>
+        {{post.author_id}}于{{post.time}}发表：
+      </div>
+      <div>
+        {{post.content}}
+      </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+  </div>
 </body>
 
 </html>
