@@ -105,8 +105,23 @@ as (
 
 
 -- 显示所有视图
+use midterm_django;
+show table status where comment='view';
 /* use midterm_django;
-show table status where comment='trigger'; */
+drop view who_likes_me; */
+
+use midterm_django;
+select * from who_likes_me;
+
+-- 谁赞了我的帖子（“我”是变量）
+use midterm_django;
+create view who_likes_me   -- (myid, content, whoid, read)
+as (
+    select blog_post.author_id, blog_post.content, blog_like.username_id, blog_notify.read
+    from blog_notify, blog_like, blog_post
+    where blog_notify.like_id = blog_like.id
+        and blog_like.post_id_id = blog_post.id
+);
 
 
 

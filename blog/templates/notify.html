@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="zh-CN">
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Notify</title>
+</head>
+<style>
+  html,
+  body {
+    text-align: center;
+    margin: 0px auto;
+  }
+</style>
+<style>
+  .div-all {
+    width: 300px;
+    margin: 0 auto;
+    height: 100px;
+    border: 1px solid rgb(0, 0, 0)
+  }
+</style>
+
+<body>
+  <script type="text/javascript">{ { script } } ('{{message}}')</script>
+  <h1>你最近有{{like_notify_list_len}}条未读通知</h1>
+  <h2>TA的帖子</h2>
+  <div>
+    {% if like_notify_list_len %}
+    {% for notify in like_notify_list %}
+    <div class="div-all">
+      <div>
+        {{notify.2}}赞了你的帖子：
+      </div>
+      <div>
+        “{{notify.1}}”
+      </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div>
+      无未读消息
+    </div>
+    {% endif %}
+  </div>
+</body>
+
+</html>

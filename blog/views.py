@@ -110,6 +110,15 @@ def index(request):
     my_follow_list = Follow.objects.raw('select * from blog_follow where be_followed_id = %s', [username])
     my_follow_list_len = len(my_follow_list)
 
+    # 点赞通知
+    cursor = connection.cursor()
+    cursor.execute('select * from who_likes_me where who_likes_me.author_id = %s and who_likes_me.read = 0',[username])
+    like_notify_list = list(cursor.fetchall())
+    like_notify_list.sort(key=lambda x:x[0])
+    like_notify_list = like_notify_list[::-1]
+    cursor.close()
+    like_notify_list_len = len(like_notify_list)
+
     # 展示关注人的帖子
     cursor = connection.cursor()
     cursor.execute('select id, author, content, time, likenum, like_or_not from my_follow_post_bool where my_follow_post_bool.myid = %s', [username])
@@ -148,7 +157,7 @@ def userinfo(request):
     post_list = list(cursor.fetchall())
     post_list.sort(key=lambda x:x[0])
     post_list = post_list[::-1]
-    print(post_list)
+    # print(post_list)
     cursor.close()
    
     # if request.method == 'POST':
@@ -231,7 +240,7 @@ def like(request):
     state = request.GET.get('state')
     username = username_global
     cursor = connection.cursor()
-    print(f'state = {state}, {type(state)}')
+    # print(f'state = {state}, {type(state)}')
     if state == '0':
         try:
             # print(f'insert into blog_like value(DEFAULT, \'{post_id}\', \'{username}\')')
@@ -252,6 +261,26 @@ def like(request):
         return redirect('/blog/index/')
     elif source == 'info':
         return redirect(f'/blog/userinfo/?info={hisname}')
+
+@identity_check
+def notify(request):
+    username = username_global
+    # 点赞通知
+    cursor = connection.cursor()
+    print(f'select * from who_likes_me where who_likes_me.author_id = {username} and who_likes_me.read = 0')
+    cursor.execute('select * from who_likes_me where who_likes_me.author_id = %s and who_likes_me.read = 0',[username])
+    like_notify_list = list(cursor.fetchall())
+    like_notify_list.sort(key=lambda x:x[0])
+    like_notify_list = like_notify_list[::-1]
+    cursor.close()
+    print(like_notify_list)
+    # 标为已读
+    cursor = connection.cursor()
+    cursor.execute('update who_likes_me set who_likes_me.read = 1 where who_likes_me.author_id = %s and who_likes_me.read = 0',[username])
+    cursor.close()
+    like_notify_list_len = len(like_notify_list)
+    return render(request, 'notify.html', locals())
+
 
 
 @identity_check
