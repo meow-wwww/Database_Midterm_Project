@@ -234,13 +234,14 @@ def like(request):
     print(f'state = {state}, {type(state)}')
     if state == '0':
         try:
+            # print(f'insert into blog_like value(DEFAULT, \'{post_id}\', \'{username}\')')
             cursor.execute(f'insert into blog_like value(DEFAULT, \'{post_id}\', \'{username}\')')
         except:
             request.session['self_script'] = 'alert'
             request.session['self_message'] = '点赞失败，出现了奇怪的错误'
     else:
         try:
-            # print(f'delete from blog_like where blog_like.post_id = %s and blog_like.username_id = %s', [post_id, username])
+            # print(f'delete from blog_like where blog_like.post_id_id = {post_id} and blog_like.username_id = {username}')
             cursor.execute('delete from blog_like where blog_like.post_id_id = %s and blog_like.username_id = %s', [post_id, username])
         except:
             request.session['self_script'] = 'alert'

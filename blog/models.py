@@ -1,5 +1,6 @@
 # from tkinter import models.CASCADE
 from curses.ascii import US
+from tkinter import CASCADE
 from django.db import models
 from datetime import datetime
 
@@ -15,12 +16,12 @@ class Post(models.Model):
     content = models.CharField(max_length=200)
     time = models.DateTimeField(auto_now_add=True)
 
-class Reply(models.Model):
-    id = models.AutoField(primary_key=True)
-    content = models.CharField(max_length=100)
-    post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
-    sender_id = models.ForeignKey(User, related_name='+', on_delete=models.CASCADE)
-    receiver_id = models.ForeignKey(User, related_name='+', on_delete=models.CASCADE)
+# class Reply(models.Model):
+#     id = models.AutoField(primary_key=True)
+#     content = models.CharField(max_length=100)
+#     post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
+#     sender_id = models.ForeignKey(User, related_name='+', on_delete=models.CASCADE)
+#     receiver_id = models.ForeignKey(User, related_name='+', on_delete=models.CASCADE)
 
 class Follow(models.Model):
     id = models.AutoField(primary_key=True)
@@ -31,3 +32,9 @@ class Like(models.Model):
     id = models.AutoField(primary_key=True)
     username = models.ForeignKey(User, on_delete=models.CASCADE)
     post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
+
+class Notify(models.Model):
+    id = models.AutoField(primary_key=True)
+    like = models.ForeignKey(Like, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    read = models.BooleanField()

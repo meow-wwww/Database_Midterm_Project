@@ -13,6 +13,7 @@ as (
 
 
 -- xx关注的人的帖子（id, author, content, time, likenum）
+-- 没用上，后面有完善版
 use midterm_django;
 create view my_follow_post(id, author, content, time, likenum, myid)
 as(
@@ -29,6 +30,7 @@ as(
 
 
 -- 某人发布的帖子(id, author, content, time, likenum)
+-- 没用上，后面有完善版
 use midterm_django;
 create view ones_post(id, author, content, time, likenum, myid)
 as(
@@ -87,8 +89,8 @@ as(
 -- 某人发布的帖子,以及是否点赞(id, author, content, time, likenum, hisid, myid, like_or_not)
 use midterm_django;
 create view ones_post_bool(id, author, content, time, likenum, hisid, myid, like_or_not) 
-    -- myid:查看的是谁; like_or_not: 我点赞没有
-    -- 两个变量
+    -- myid:查看的是<谁>; like_or_not: <我>点赞没有
+    -- 两个变量,分别对应hisid和myid
 as (
     select ones_post.id, ones_post.author, ones_post.content, ones_post.time, ones_post.likenum, ones_post.myid, blog_user.name, someone_like_or_not.like_or_not
     from ones_post, someone_like_or_not, blog_user
@@ -104,4 +106,14 @@ as (
 
 -- 显示所有视图
 /* use midterm_django;
-show table status where comment='view'; */
+show table status where comment='trigger'; */
+
+
+
+-- 触发器
+use midterm_django;
+create trigger like_notification after insert on blog_like for each row
+insert into blog_notify values (DEFAULT, false, NEW.id, NEW.username_id);
+
+/* use midterm_django;
+drop trigger like_notification; */

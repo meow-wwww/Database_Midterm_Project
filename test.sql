@@ -1,3 +1,11 @@
+use midterm_django;
+insert into blog_like value(DEFAULT, '4', 'wxy');
+
+use midterm_django;
+delete from blog_user;
+delete from blog_notify;
+/* delete from blog_like where blog_like.post_id_id = 4 and blog_like.username_id = 'wxy'; */
+
 -- “我”关注的人的帖子
 use midterm_django;
 select blog_post.id, blog_post.author_id, blog_post.content, blog_post.time, likenum
