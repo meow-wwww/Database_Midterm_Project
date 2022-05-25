@@ -46,11 +46,12 @@ def register(request):
             # 修改数据库
             cursor = connection.cursor()
             try:
-                cursor.execute(f'insert into blog_user value(\'{username}\', \'{password}\', \'{email}\')')
+                cursor.execute('insert into blog_user value(%s, %s, %s)', [username, password, email])
             except:
                 script = 'alert'
                 message = '用户名重复'
                 return render(request, 'register.html', locals())
+            cursor.close()
             request.session['self_script'] = 'alert'
             request.session['self_message'] = '注册成功'
             return redirect('/blog/login/')
@@ -139,6 +140,26 @@ def index(request):
 
 
 @identity_check
+def myfollow(request):
+    username = username_global
+    # 我关注的人数
+    follow_me_list = Follow.objects.raw('select * from blog_follow where following_id = %s', [username])
+    follow_me_list_len = len(follow_me_list)
+    # for i in follow_me_list:
+        # print(i.name)
+    return render(request, 'myfollow.html', locals())
+
+
+@identity_check
+def followme(request):
+    username = username_global
+    # 关注我的人数
+    my_follow_list = Follow.objects.raw('select * from blog_follow where be_followed_id = %s', [username])
+    my_follow_list_len = len(my_follow_list)
+    return render(request, 'followme.html', locals())
+
+
+@identity_check
 def userinfo(request):
     # print('===========in userinfo')
     hisname = request.GET.get('info')
@@ -160,14 +181,6 @@ def userinfo(request):
     # print(post_list)
     cursor.close()
    
-    # if request.method == 'POST':
-    #     if searchform.is_valid():
-    #         # print('===========is searching friends')
-    #         search_name = searchform.cleaned_data['search_name']
-    #         search_name = "%"+search_name+"%"
-    #         users_list = User.objects.raw('select * from blog_user where blog_user.name like %s', [search_name])
-    #         return render(request, 'index.html', locals())
-    # else:
     return render(request, 'userinfo.html', locals())
 
 @identity_check
@@ -182,7 +195,7 @@ def post(request):
             # 修改数据库
             cursor = connection.cursor()
             try:
-                cursor.execute(f'insert into blog_post value(DEFAULT, \'{content}\', \'{datetime.now()}\', \'{username}\')')
+                cursor.execute(f'insert into blog_post value(DEFAULT, %s, %s, %s)', [content, datetime.now(), username])
             except:
                 script = 'alert'
                 message = '发送失败'
@@ -203,7 +216,7 @@ def follow(request):
     # 但是最好再加一个except
     cursor = connection.cursor()
     try:
-        cursor.execute(f'insert into blog_follow value(DEFAULT, \'{hisname}\', \'{username}\')')
+        cursor.execute(f'insert into blog_follow value(DEFAULT, %s, %s)', [hisname, username])
     except:
         request.session['self_script'] = 'alert'
         request.session['self_message'] = '关注失败，出现了奇怪的错误'
@@ -227,6 +240,7 @@ def unfollow(request):
         request.session['self_script'] = 'alert'
         request.session['self_message'] = '取关失败，出现了奇怪的错误'
         return redirect(f'/blog/userinfo/?info={hisname}')
+    cursor.close()
     request.session['self_script'] = 'alert'
     request.session['self_message'] = '取消关注成功'
     return redirect(f'/blog/userinfo/?info={hisname}')
@@ -244,7 +258,7 @@ def like(request):
     if state == '0':
         try:
             # print(f'insert into blog_like value(DEFAULT, \'{post_id}\', \'{username}\')')
-            cursor.execute(f'insert into blog_like value(DEFAULT, \'{post_id}\', \'{username}\')')
+            cursor.execute('insert into blog_like value(DEFAULT, %s, %s)', [post_id, username])
         except:
             request.session['self_script'] = 'alert'
             request.session['self_message'] = '点赞失败，出现了奇怪的错误'
@@ -267,7 +281,7 @@ def notify(request):
     username = username_global
     # 点赞通知
     cursor = connection.cursor()
-    print(f'select * from who_likes_me where who_likes_me.author_id = {username} and who_likes_me.read = 0')
+    print('select * from who_likes_me where who_likes_me.author_id = %s and who_likes_me.read = 0', [username])
     cursor.execute('select * from who_likes_me where who_likes_me.author_id = %s and who_likes_me.read = 0',[username])
     like_notify_list = list(cursor.fetchall())
     like_notify_list.sort(key=lambda x:x[0])

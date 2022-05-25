@@ -31,24 +31,14 @@
 
 <body>
   <script type="text/javascript">{ { script } } ('{{message}}')</script>
-  <h1>你最近有{{like_notify_list_len}}条未读通知</h1>
-  <h2>TA的帖子</h2>
+  <h1>有{{my_follow_list_len}}人关注了你</h1>
   <div>
-    {% if like_notify_list_len %}
-    {% for notify in like_notify_list %}
-    <div class="div-all">
-      <div>
-        {{notify.2}}赞了你的帖子：
-      </div>
-      <div>
-        “{{notify.1}}”
-      </div>
+    {% if my_follow_list_len %}
+    {% for person in my_follow_list %}
+    <div>
+      <a href="/blog/userinfo/?info={{person.following_id}}">{{person.following_id}}</a>
     </div>
     {% endfor %}
-    {% else %}
-    <div>
-      无未读消息
-    </div>
     {% endif %}
   </div>
   <div>

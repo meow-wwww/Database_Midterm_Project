@@ -14,4 +14,6 @@ urlpatterns = [
     path('logout/', views.logout, name='logout'),
     path('like/', views.like, name='like'),
     path('notify/', views.notify, name='notify'),
+    path('myfollow/', views.myfollow, name='myfollow'),
+    path('followme/', views.followme, name='followme'),
 ]
